@@ -35,37 +35,37 @@
               <a href="index.php"><span class="fa fa-home mr-3"></span> Home</a>
             </li>
             <li>
-              <a href="anonymous.php"><span class="fas fa-envelope mr-3 notif"><small class="d-flex align-items-center justify-content-center">0</small></span> Anonymous Message</a>
+              <a href="anonymous.php?folder=inbox"><span class="fas fa-envelope mr-3 notif"><small class="d-flex align-items-center justify-content-center">0</small></span> Anonymous Message</a>
             </li>
             <li>
               <a href="confessions.php"><span class="fas fa-dove mr-3"></span> Confessions</a>
             </li>
             <li>
-              <a href="#"><span class="fas fa-image mr-3"></span> RS Memories</a>
+              <a href="#"><span class="fas fa-image mr-3"></span> RS Memories <small>(Upcoming)</small></a>
             </li>
             <li>
-              <a href="#"><span class="fas fa-chalkboard-teacher mr-3"></span> Faculty & Review</a>
+              <a href="#"><span class="fas fa-chalkboard-teacher mr-3"></span> Faculty & Review <small>(Upcoming)</small></a>
             </li>
             <li>
-              <a href="#"><span class="fas fa-sync-alt mr-3"></span> Lost & Found</a>
+              <a href="#"><span class="fas fa-sync-alt mr-3"></span> Lost & Found <small>(Upcoming)</small></a>
             </li>
             <li>
-              <a href="#"><span class="fas fa-newspaper mr-3"></span> Notice Board</a>
+              <a href="#"><span class="fas fa-newspaper mr-3"></span> Notice Board <small>(Upcoming)</small></a>
             </li>
             <li>
-              <a href="#"><span class="fas fa-book-dead mr-3"></span> Course Materials</a>
+              <a href="#"><span class="fas fa-book-dead mr-3"></span> Course Materials <small>(Upcoming)</small></a>
             </li>
             <li>
-              <a href="#"><span class="fas fa-bus mr-3"></span> Bus Route</a>
+              <a href="#"><span class="fas fa-bus mr-3"></span> Bus Route <small>(Upcoming)</small></a>
             </li>
             <li>
-              <a href="#"><span class="fas fa-hotel mr-3"></span> To-lets Finder</a>
+              <a href="#"><span class="fas fa-hotel mr-3"></span> To-lets Finder <small>(Upcoming)</small></a>
             </li>
             <li>
-              <a href="#"><span class="fas fa-user-friends mr-3"></span> Travel Mate Finder</a>
+              <a href="#"><span class="fas fa-user-friends mr-3"></span> Travel Mate Finder <small>(Upcoming)</small></a>
             </li>
             <li>
-              <a href="#"><span class="fas fa-heart mr-3"></span> Matchmaking</a>
+              <a href="#"><span class="fas fa-heart mr-3"></span> Matchmaking <small>(Upcoming)</small></a>
             </li>
           </ul>
         </div>

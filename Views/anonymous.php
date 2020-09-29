@@ -1,5 +1,8 @@
 <?php 
   $title = "Anonymous Messages | BUSA";
+  $currentPage = "inbox";
+  $mode = "thread";
+  $thread_id = 0;
   include('header.php');
  ?>
 
@@ -11,7 +14,28 @@
   </div>
 </div>
         <?php 
+            if (isset($_GET["folder"])) {
+              $currentPage = $_GET["folder"];
+              $mode = "list";
+            }
+            else if(isset($_GET["viewThread"])){
+              $thread_id = $_GET["viewThread"];
+              $mode = "thread";
+            }
             include('../Controllers/annonymous.php');
+            include('../Models/annonymous.php');
+
+            if ($mode == "list") {
+              $headerTitle = ucwords($currentPage);
+            }
+            else if ($mode == "thread") {
+              $headerTitle = "Read Message";
+            }
+            
+
+            
+            //$folder = $_GET["folder"];
+            //
          ?>
             <link rel='stylesheet prefetch' href='http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css'>
 <div class="row">
@@ -29,7 +53,7 @@
           </a>
       </div>
       <div class="inbox-body">
-          <a href="#myModal" data-toggle="modal"  title="Compose"    class="btn btn-compose">
+          <a href="#myModal" data-toggle="modal"  title="Compose" class="btn btn-compose" style="margin-top: 10px;">
               Compose
           </a>
           <!-- Modal -->
@@ -41,29 +65,30 @@
                           <h4 class="modal-title">Compose</h4>
                       </div>
                       <div class="modal-body">
-                          <form role="form" class="form-horizontal">
+                          <form role="form" class="form-horizontal" method="post" enctype="multipart/form-data" action="anonymous.php">
                               <div class="form-group">
                                   <label class="col-lg-2 control-label">To</label>
                                   <div class="col-lg-10">
-                                      <input type="text" placeholder="" id="inputEmail1" class="form-control">
+                                      <input type="text" placeholder="Student ID" id="inputEmail1" class="form-control" name="input_id">
                                   </div>
                               </div>
-                              <div class="form-group">
-                                  <label class="col-lg-2 control-label">Cc / Bcc</label>
+                            <!--  <div class="form-group">
+                                  <label class="col-lg-2 control-label">To</label>
                                   <div class="col-lg-10">
-                                      <input type="text" placeholder="" id="cc" class="form-control">
+                                      <input type="text" placeholder="BRACU Gsuit Email" id="cc" class="form-control">
                                   </div>
                               </div>
+                            -->
                               <div class="form-group">
                                   <label class="col-lg-2 control-label">Subject</label>
                                   <div class="col-lg-10">
-                                      <input type="text" placeholder="" id="inputPassword1" class="form-control">
+                                      <input type="text" placeholder="" id="inputPassword1" class="form-control" name="input_subject">
                                   </div>
                               </div>
                               <div class="form-group">
                                   <label class="col-lg-2 control-label">Message</label>
                                   <div class="col-lg-10">
-                                      <textarea rows="10" cols="30" class="form-control" id="" name=""></textarea>
+                                      <textarea rows="10" cols="30" class="form-contro" id="" name="input_content" style="width: 100%;"></textarea>
                                   </div>
                               </div>
 
@@ -72,9 +97,9 @@
                                       <span class="btn green fileinput-button">
                                         <i class="fa fa-plus fa fa-white"></i>
                                         <span>Attachment</span>
-                                        <input type="file" name="files[]" multiple="">
+                                        <input type="file" name="input_pic">
                                       </span>
-                                      <button class="btn btn-send" type="submit">Send</button>
+                                      <button class="btn btn-send" type="submit" name="send">Send</button>
                                   </div>
                               </div>
                           </form>
@@ -84,21 +109,20 @@
           </div><!-- /.modal -->
       </div>
       <ul class="inbox-nav inbox-divider">
-          <li class="active">
-              <a href="#"><i class="fa fa-inbox"></i> Inbox <span class="label label-danger pull-right" style="margin-top: 0px">2</span></a>
-
+          <li <?php if ($currentPage=="inbox") {echo 'class="active"';} ?>>
+              <a href="?folder=inbox"><i class="fa fa-inbox"></i> Inbox <span class="label label-danger pull-right" style="margin-top: 0px">2</span></a>
           </li>
-          <li>
-              <a href="#"><i class="fa fa-envelope-o"></i> Sent Mail</a>
+          <li <?php if ($currentPage=="sent") {echo 'class="active"';} ?>>
+              <a href="?folder=sent"><i class="fa fa-envelope-o"></i>Sent Mail</a>
           </li>
-          <li>
-              <a href="#"><i class="fa fa-bookmark-o"></i> Important</a>
+          <li <?php if ($currentPage=="important") {echo 'class="active"';} ?>>
+              <a href="?folder=important"><i class="fa fa-bookmark-o"></i> Important</a>
           </li>
-          <li>
-              <a href="#"><i class=" fa fa-external-link"></i> Drafts <span class="label label-info pull-right" style="margin-top: 0px">30</span></a>
+          <li <?php if ($currentPage=="archived") {echo 'class="active"';} ?>>
+              <a href="?folder=archived"><i class=" fa fa-external-link"></i>Archived <span class="label label-info pull-right" style="margin-top: 0px">30</span></a>
           </li>
-          <li>
-              <a href="#"><i class=" fa fa-trash-o"></i> Trash</a>
+          <li <?php if ($currentPage=="trash") {echo 'class="active"';} ?>>
+              <a href="?folder=trash"><i class=" fa fa-trash-o"></i> Trash</a>
           </li>
       </ul>
       
@@ -127,13 +151,13 @@
 
 
 
-
-
-
-
   <aside class="lg-side col-xs-12 col-sm-12 col-md-8 col-lg-9">
       <div class="inbox-head">
-          <h3>Inbox</h3>
+          <h3>
+            <?php 
+              echo $headerTitle;
+            ?>
+          </h3>
           <form action="#" class="pull-right position">
               <div class="input-append">
                   <input type="text" class="sr-input" placeholder="Search Mail">
@@ -142,6 +166,7 @@
           </form>
       </div>
       <div class="inbox-body">
+         <!--
          <div class="mail-option">
              <div class="btn-group">
                  <a data-original-title="Refresh" data-placement="top" data-toggle="dropdown" href="#" class="btn mini tooltips">
@@ -158,155 +183,35 @@
                  </li>
              </ul>
          </div>
+       -->
           <table class="table table-inbox table-hover">
             <tbody>
-              <tr class="unread">
+              <?php
+                if ($mode == "list") {
+                  foreach ($texts as $count => $text) {         
+                    echo get_list_view_html($count,$text);
+                  } ;
+                }
+                elseif ($mode == "thread") {
+                    echo '<div class="email-body">
+                          <h4>'. $t_subject .'</h4>
+                          <br>
+                          <p>'. $t_content .'</p>
+                          <br>
+                          <p><strong>Regards</strong>,<br> Annonymous</p>
+                        </div>';
+
+                    echo '<div class="email-attachments" style="padding-top:1px solid black;">
+                            <div class="title">Attachments <span>('.$file_cnt.' file)</span></div>
+                            <ul>
+                              <li><a target="_blank" href="annonymous/'. $t_img .'"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg> '.$t_img.' <span class="text-muted tx-11">('. round(filesize('annonymous/'.$t_img)/1024) .' KB)</span></a></li>
+                            </ul>
+                          </div>';
+                 }            
                   
-                  <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
-                  <td class="view-message ">Added a new class: Login Class Fast Site</td>
-                  <td class="view-message  inbox-small-cells"><i class="fa fa-paperclip"></i></td>
-                  <td class="view-message  text-right">9:27 AM</td>
-              </tr>
-              <tr class="unread">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
-                  <td class="view-message">Improve the search presence of WebSite</td>
-                  <td class="view-message inbox-small-cells"></td>
-                  <td class="view-message text-right">March 15</td>
-              </tr>
-              <tr class="">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
-                  <td class="view-message">Last Chance: Upgrade to Pro for </td>
-                  <td class="view-message inbox-small-cells"></td>
-                  <td class="view-message text-right">March 15</td>
-              </tr>
-              <tr class="">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
-                  <td class="view-message">Boost Your Website Traffic</td>
-                  <td class="view-message inbox-small-cells"></td>
-                  <td class="view-message text-right">April 01</td>
-              </tr>
-              <tr class="">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star inbox-started"></i></td>
-                  <td class="view-message">Stop wasting your visitors </td>
-                  <td class="view-message inbox-small-cells"></td>
-                  <td class="view-message text-right">May 23</td>
-              </tr>
-              <tr class="">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star inbox-started"></i></td>
-                  <td class="view-message">New WOW Slider v7.8 - 67% off</td>
-                  <td class="view-message inbox-small-cells"><i class="fa fa-paperclip"></i></td>
-                  <td class="view-message text-right">March 14</td>
-              </tr>
-              <tr class="">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star inbox-started"></i></td>
-                  <td class="view-message">The One Sign Your Co-Worker Will Stab</td>
-                  <td class="view-message inbox-small-cells"><i class="fa fa-paperclip"></i></td>
-                  <td class="view-message text-right">Feb 19</td>
-              </tr>
-              <tr class="">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
-                  <td class="view-message view-message">Welcome to the Drupal Community</td>
-                  <td class="view-message inbox-small-cells"></td>
-                  <td class="view-message text-right">March 04</td>
-              </tr>
-              <tr class="">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
-                  <td class="view-message view-message">Somebody requested a new password </td>
-                  <td class="view-message inbox-small-cells"></td>
-                  <td class="view-message text-right">June 13</td>
-              </tr>
-              <tr class="">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
-                  <td class="view-message view-message">Password successfully changed</td>
-                  <td class="view-message inbox-small-cells"></td>
-                  <td class="view-message text-right">March 24</td>
-              </tr>
-              <tr class="">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star inbox-started"></i></td>
-                  <td class="view-message">alireza, do you know</td>
-                  <td class="view-message inbox-small-cells"></td>
-                  <td class="view-message text-right">March 09</td>
-              </tr>
-              <tr class="">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star inbox-started"></i></td>
-                  <td class="view-message">7 new singles we think you'll like</td>
-                  <td class="view-message inbox-small-cells"><i class="fa fa-paperclip"></i></td>
-                  <td class="view-message text-right">May 14</td>
-              </tr>
-              <tr class="">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
-                  <td class="view-message">Alireza: Nokia Networks, System Group and </td>
-                  <td class="view-message inbox-small-cells"><i class="fa fa-paperclip"></i></td>
-                  <td class="view-message text-right">February 25</td>
-              </tr>
-              <tr class="">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
-                  <td class="view-message view-message">Your account was recently logged into</td>
-                  <td class="view-message inbox-small-cells"></td>
-                  <td class="view-message text-right">March 14</td>
-              </tr>
-              <tr class="">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
-                  <td class="view-message">Your Twitter password has been changed</td>
-                  <td class="view-message inbox-small-cells"></td>
-                  <td class="view-message text-right">April 07</td>
-              </tr>
-              <tr class="">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
-                  <td class="view-message">http://golddesigner.org/ Performance Report</td>
-                  <td class="view-message inbox-small-cells"></td>
-                  <td class="view-message text-right">July 14</td>
-              </tr>
-              <tr class="">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star inbox-started"></i></td>
-                  <td class="view-message">Submit Your Website to the AddMe Business Directory</td>
-                  <td class="view-message inbox-small-cells"></td>
-                  <td class="view-message text-right">August 10</td>
-              </tr>
-              <tr class="">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
-                  <td class="view-message view-message">Forget Google AdWords: Un-Limited Clicks fo</td>
-                  <td class="view-message inbox-small-cells"><i class="fa fa-paperclip"></i></td>
-                  <td class="view-message text-right">April 14</td>
-              </tr>
-              <tr class="">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
-                  <td class="view-message">IMPORTANT: Don't lose your domains!</td>
-                  <td class="view-message inbox-small-cells"><i class="fa fa-paperclip"></i></td>
-                  <td class="view-message text-right">June 16</td>
-              </tr>
-              <tr class="">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star inbox-started"></i></td>
-                  <td class="view-message">Your Website On Google (Higher Rankings Are Better)</td>
-                  <td class="view-message inbox-small-cells"></td>
-                  <td class="view-message text-right">August 10</td>
-              </tr>
-              <tr class="">
-                  
-                  <td class="inbox-small-cells"><i class="fa fa-star"></i></td>
-                  <td class="view-message view-message">Alireza Zare Login faild</td>
-                  <td class="view-message inbox-small-cells"><i class="fa fa-paperclip"></i></td>
-                  <td class="view-message text-right">feb 14</td>
-              </tr>
+               ?>
+               
+              
           </tbody>
           </table>
       </div>
