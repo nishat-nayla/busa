@@ -1,7 +1,7 @@
 <?php 
     function get_list_view_html($count,$confession){
       $output = '<div class="card mb-4">
-                  <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
+                  <img class="card-img-top" src="confessions/'. $confession["c_img"] .'" alt="Confession Photo" style="height: 300px; object-fit: cover; object-position: 50% 20%;">
                   <div class="card-body">
                     <h2 class="card-title">'. $confession["c_name"] .'</h2>
                     <p class="card-text">'. $confession["c_heading"] .'</p>
@@ -30,6 +30,7 @@
       $c_description = $row["c_description"];
       $c_clue = $row["c_clue"];
       $c_student_id = $row["c_student_id"];
+      $c_img = $row["c_img"];
 
       $confessions[$count] = array(
         "count" => $count,
@@ -42,7 +43,8 @@
         "c_heading" => $c_heading,
         "c_description" => $c_description,
         "c_clue" => $c_clue,
-        "c_student_id" => $c_student_id
+        "c_student_id" => $c_student_id,
+        "c_img" => $c_img
       );
       $count = $count + 1;
     }

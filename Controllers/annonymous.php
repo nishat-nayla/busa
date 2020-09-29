@@ -1,55 +1,95 @@
 <?php 
-    function get_list_view_html($count,$confession){
-      $output = '<div class="card mb-4">
-                  <img class="card-img-top" src="http://placehold.it/750x300" alt="Card image cap">
-                  <div class="card-body">
-                    <h2 class="card-title">'. $confession["c_name"] .'</h2>
-                    <p class="card-text">'. $confession["c_heading"] .'</p>
-                    <a href="viewconfession.php?id='. $confession["c_id"] .'" class="btn btn-primary">Read More &rarr;</a>
-                  </div>
-                  <div class="card-footer text-muted">
-                    Posted on '. $confession["c_date"] .'
-                  </div>
-                </div>';
-      return $output;
+  function addToDatabase($receiver, $subject, $content, $img){
+    $s_id = $GLOBALS['student_id'] ;
+    $sql = "INSERT INTO texts(sender, receiver, seen, archived, deleted, is_important, subject, content, image) 
+        VALUES ('$s_id','$receiver','0','0','0','0','$subject','$content','$img')";
+
+
+    $sendQuery = mysqli_query($GLOBALS['conn'], $sql);
+
+    if ($sendQuery) {
+      echo '<div class="alert alert-success">';
+        echo "<strong>Success!</strong> Message sent.";
+      echo "</div>";
     }
+    else{
+      echo '<div class="alert alert-danger">';
+        echo "<strong>Failed</strong> to sent message. Try again";
+      echo "</div>";
+    }
+  }
+ ?>
 
 
+<?php
     $count = 0;
-    $confessions = array();
-    $query = "SELECT * from confessions";
-    $result = mysqli_query($conn, $query);
-    while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-      $c_id = $row["c_id"];
-      $posted_by = $row["posted_by"];
-      $c_name = $row["c_name"];
-      $c_dept = $row["c_dept"];
-      $c_gender = $row["c_gender"];
-      $c_date = $row["c_date"];
-      $c_heading = $row["c_heading"];
-      $c_description = $row["c_description"];
-      $c_clue = $row["c_clue"];
-      $c_student_id = $row["c_student_id"];
+    $texts = array();
+    if ($mode == "list") {
+      if ($currentPage == "inbox") {
+        $query = "SELECT * from texts WHERE receiver = '$student_id' ORDER BY t_time desc";
+      }
+      else if ($currentPage == "sent") {
+        $query = "SELECT * from texts WHERE sender = '$student_id' ORDER BY t_time desc";
+      }
+      else if ($currentPage == "trash") {
+        $query = "SELECT * from texts WHERE receiver = '$student_id' AND deleted = '1' ORDER BY t_time desc";
+      }
+      else if ($currentPage == "archived") {
+        $query = "SELECT * from texts WHERE receiver = '$student_id' AND archived = '1' ORDER BY t_time desc";
+      }
+      else{
+        $query = "SELECT * from texts WHERE receiver = '$student_id' ORDER BY t_time desc";
+      }
 
-      $confessions[$count] = array(
-        "count" => $count,
-        "c_id" => $c_id,
-        "posted_by" => $posted_by,
-        "c_name" => $c_name,
-        "c_dept" => $c_dept,
-        "c_gender" => $c_gender,
-        "c_date" => $c_date,
-        "c_heading" => $c_heading,
-        "c_description" => $c_description,
-        "c_clue" => $c_clue,
-        "c_student_id" => $c_student_id
-      );
-      $count = $count + 1;
+      $result = mysqli_query($conn, $query);
+      while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+        $t_id = $row["t_id"];
+        $t_time = $row["t_time"];
+        $t_seen = $row["seen"];
+        $t_important = $row["is_important"];
+        $t_subject = $row["subject"];
+        $t_content = $row["content"];
+        $t_img = $row["image"];
+
+        $texts[$count] = array(
+          "count" => $count,
+          "t_id" => $t_id,
+          "t_time" => $t_time,
+          "t_seen" => $t_seen,
+          "t_important" => $t_important,
+          "t_subject" => $t_subject,
+          "t_content" => $t_content,
+          "t_img" => $t_img
+        );
+        $count = $count + 1;
+      }
     }
+    else if ($mode == "thread") {
+      $query = "SELECT * from texts WHERE t_id = '$thread_id' AND (sender  = '$student_id' OR receiver = '$student_id')";
+      $result = mysqli_query($conn, $query);
 
+      $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+      $t_id = $row["t_id"];
+      $t_time = $row["t_time"];
+      $t_seen = $row["seen"];
+      $t_important = $row["is_important"];
+      $t_subject = $row["subject"];
+      $t_content = $row["content"];
+      $t_img = $row["image"];
 
+      if ($t_img == null) {
+        $file_cnt = 0;
+      }
+      else{
+        $file_cnt = 1;
+      }
 
-    foreach ($confessions as $count => $confession) {         
-      //echo get_list_view_html($count,$confession);
-    } ;
-  ?>
+      if (mysqli_num_rows($result) == 0) {
+        $t_subject = "Access denied!";
+      }
+
+    }
+    
+    
+
+ ?>
