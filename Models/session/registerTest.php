@@ -11,18 +11,23 @@
 			return $data;
 		}
 
-		$email=check_input($_POST['email']);
+		$set='123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		$email = substr(str_shuffle($set), 0, 15);
+		$email = $email . "@bracu.ac.bd";
+		//$email=check_input($_POST['email']);
 		$password=md5(check_input($_POST['password']));
 
 		$full_name = check_input($_POST['full-name']);
-		$student_id = check_input($_POST['student-id']);
+		//$student_id = check_input($_POST['student-id']);
+		$set='123456789';
+		$student_id = substr(str_shuffle($set), 0, 8);
 		$dob = check_input($_POST['birthday']);
 		$phone = check_input($_POST['phone']);
 		$sex = check_input($_POST['sex']);
 
 		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 	  		$_SESSION['sign_msg'] = "Invalid email format";
-	  		header('location:../../Views/signup.php');
+	  		header('location:../../Tests/signupTest.php');
 		}
 
 		else{
@@ -31,11 +36,11 @@
 			$query2=mysqli_query($conn,"select * from user where student_id='$student_id'");
 			if(mysqli_num_rows($query)>0){
 				$_SESSION['sign_msg'] = "Email already taken";
-	  			header('location:../../Views/signup.php');
+	  			header('location:../../Tests/signupTest.php');
 			}
 			elseif (mysqli_num_rows($query2)>0) {
 				$_SESSION['sign_msg'] = "Student ID already registered";
-	  			header('location:../../Views/signup.php');
+	  			header('location:../../Tests/signupTest.php');
 			}
 			else{
 				//depends on how you set your verification code
@@ -43,8 +48,8 @@
 				$code=substr(str_shuffle($set), 0, 12);
 				
 
-				$runQuery = mysqli_query($conn,"insert into user (email, password, code, full_name, student_id, phone, birthday, sex) values
-				 ('$email', '$password', '$code', '$full_name', '$student_id', '$phone', '$dob', '$sex')");
+				$runQuery = mysqli_query($conn,"insert into user (email, password, code, full_name, student_id, phone, birthday, sex, verify) values
+				 ('$email', '$password', '$code', '$full_name', '$student_id', '$phone', '$dob', '$sex', '1')");
 				if ($runQuery) {
 					$msg = "Registration successful ";
 				}
@@ -68,7 +73,7 @@
 					<p>Email: ".$email."</p>
 					<p>Password: ".$_POST['password']."</p>
 					<p>Please click the link below to activate your account.</p>
-					<h4><a href='http://bracu.xyz/Models/session/activate.php?uid=$uid&code=$code'>Activate My Account</h4>
+					<h4><a href='http://bracu.xyz/session/activate.php?uid=$uid&code=$code'>Activate My Account</h4>
 					</body>
 					</html>
 					";
@@ -81,11 +86,11 @@
 				$mailSent = mail($to,$subject,$message,$headers);	
 
 				if ($mailSent) {
-					$msg = $msg . "& verification email has sent.";
+					$msg = $msg . "& Test Passed.";
 				}
 
 				$_SESSION['sign_msg'] = $msg;
-		  		header('location:../../Views/signup.php');
+		  		header('location:../../Tests/signupTest.php');
 
 	  		}
 		}
